@@ -9,7 +9,7 @@
 ## Usage
 ```c#
 var file = new FileInfo(@"path/to/file.ext");
-var client = new TusClient();
+var client = new TusClient(60 * 1000); //timeout for the request of each chunk transfer, not using it might cause a lock. (defaults to Infinite)
 var fileUrl = await client.CreateAsync(Address, file.Length, metadata);
 await client.UploadAsync(fileUrl, file, chunkSize: 5D);
 ```
