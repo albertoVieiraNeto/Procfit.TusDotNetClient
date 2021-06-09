@@ -25,6 +25,13 @@ namespace TusDotNetClient
     /// </summary>
     public class TusClient
     {
+        private int _requestTimeout;
+
+        public TusClient(int requestTimeout = -1)
+        {
+            _requestTimeout = requestTimeout;
+        }
+
         /// <summary>
         /// Get or set the hashing algorithm implementation to be used for checksum calculation.
         /// </summary>
@@ -90,7 +97,7 @@ namespace TusDotNetClient
                         $"{md.key.Replace(" ", "").Replace(",", "")} {Convert.ToBase64String(Encoding.UTF8.GetBytes(md.value))}")));
             }
 
-            var response = await client.PerformRequestAsync(request)
+            var response = await client.PerformRequestAsync(request, _requestTimeout)
                 .ConfigureAwait(false);
 
             if (response.StatusCode != HttpStatusCode.Created)
@@ -194,7 +201,7 @@ namespace TusDotNetClient
                             try
                             {
                                 request.UploadProgressed += OnProgress;
-                                var response = await client.PerformRequestAsync(request)
+                                var response = await client.PerformRequestAsync(request, _requestTimeout)
                                     .ConfigureAwait(false);
                                 responses.Add(response);
                                 request.UploadProgressed -= OnProgress;
@@ -259,7 +266,7 @@ namespace TusDotNetClient
 
                     request.DownloadProgressed += reportProgress;
 
-                    var response = await client.PerformRequestAsync(request)
+                    var response = await client.PerformRequestAsync(request, _requestTimeout)
                         .ConfigureAwait(false);
 
                     request.DownloadProgressed -= reportProgress;
@@ -279,7 +286,7 @@ namespace TusDotNetClient
 
             try
             {
-                return await client.PerformRequestAsync(request)
+                return await client.PerformRequestAsync(request, _requestTimeout)
                     .ConfigureAwait(false);
             }
             catch (TusException ex)
@@ -299,7 +306,7 @@ namespace TusDotNetClient
             var client = new TusHttpClient();
             var request = new TusHttpRequest(url, RequestMethod.Options, AdditionalHeaders);
 
-            var response = await client.PerformRequestAsync(request)
+            var response = await client.PerformRequestAsync(request, _requestTimeout)
                 .ConfigureAwait(false);
 
             // Spec says NoContent but tusd gives OK because of browser bugs
@@ -325,7 +332,7 @@ namespace TusDotNetClient
             var client = new TusHttpClient();
             var request = new TusHttpRequest(url, RequestMethod.Delete, AdditionalHeaders);
 
-            var response = await client.PerformRequestAsync(request)
+            var response = await client.PerformRequestAsync(request, _requestTimeout)
                 .ConfigureAwait(false);
 
             return response.StatusCode == HttpStatusCode.NoContent ||
@@ -338,7 +345,7 @@ namespace TusDotNetClient
             var client = new TusHttpClient();
             var request = new TusHttpRequest(url, RequestMethod.Head, AdditionalHeaders);
 
-            var response = await client.PerformRequestAsync(request)
+            var response = await client.PerformRequestAsync(request, _requestTimeout)
                 .ConfigureAwait(false);
 
             if (response.StatusCode != HttpStatusCode.NoContent && response.StatusCode != HttpStatusCode.OK)

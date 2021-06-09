@@ -23,7 +23,7 @@ namespace TusDotNetClient
         /// <param name="request">The <see cref="TusHttpRequest"/> to execute.</param>
         /// <returns>A <see cref="TusHttpResponse"/> with the response data.</returns>
         /// <exception cref="TusException">Throws when the request fails.</exception>
-        public async Task<TusHttpResponse> PerformRequestAsync(TusHttpRequest request)
+        public async Task<TusHttpResponse> PerformRequestAsync(TusHttpRequest request, int timeout = -1)
         {
             var segment = request.BodyBytes;
 
@@ -32,7 +32,7 @@ namespace TusDotNetClient
                 var webRequest = WebRequest.CreateHttp(request.Url);
                 webRequest.AutomaticDecompression = DecompressionMethods.GZip;
 
-                webRequest.Timeout = Timeout.Infinite;
+                webRequest.Timeout = timeout;
                 webRequest.ReadWriteTimeout = Timeout.Infinite;
                 webRequest.Method = request.Method;
                 webRequest.KeepAlive = false;
